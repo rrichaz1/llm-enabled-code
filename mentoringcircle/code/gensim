@@ -1,0 +1,77 @@
+Here's how you can use Gensim to calculate text similarity:
+Step 1: Install Gensim
+First, install Gensim using pip, if you haven't already:
+
+pip install gensim  
+ 
+
+Step 2: Prepare Your Documents
+Prepare a list of documents (as strings), which includes the text from all mentors and mentees.
+
+documents = [  
+    "I'm interested in artificial intelligence and machine learning.",  
+    "My research focuses on deep learning applications in healthcare.",  
+    # Add more documents as needed  
+]  
+ 
+
+Step 3: Preprocess the Documents
+Preprocessing might include tokenization, removing stopwords, and stemming or lemmatizing the words.
+
+from gensim.parsing.preprocessing import remove_stopwords, stem_text  
+from gensim.utils import simple_preprocess  
+  
+def preprocess(document):  
+    document = remove_stopwords(document)  
+    document = stem_text(document)  # Optional: consider whether stemming is appropriate for your use case  
+    return simple_preprocess(document, deacc=True)  # Deacc=True removes punctuation  
+  
+processed_docs = [preprocess(doc) for doc in documents]  
+ 
+
+Step 4: Create the Dictionary and Corpus
+Using the processed documents, create a Gensim Dictionary and Corpus.
+
+from gensim.corpora import Dictionary  
+  
+dictionary = Dictionary(processed_docs)  
+corpus = [dictionary.doc2bow(doc) for doc in processed_docs]  
+ 
+
+Step 5: Build the Model
+You can use various models in Gensim to create document embeddings. Here, we'll use TF-IDF as an example:
+
+from gensim.models import TfidfModel  
+  
+tfidf = TfidfModel(corpus)  
+ 
+
+Step 6: Compute Similarities
+With the model in place, you can compute similarities between documents. Gensim provides a Similarity class for this purpose.
+
+from gensim.similarities import Similarity  
+  
+# Create the similarity data structure. This is the most important part where we get the similarities between the documents.  
+# You need to specify an output directory where the similarity matrix will be stored if it's too large to fit in memory.  
+similarity_index = Similarity(output_prefix="gensim-similarity", corpus=tfidf[corpus], num_features=len(dictionary))  
+  
+# To get similarities of a new document against the existing corpus:  
+new_doc = "I am interested in robotics and computer vision."  
+new_doc_processed = preprocess(new_doc)  
+new_doc_bow = dictionary.doc2bow(new_doc_processed)  
+new_doc_tfidf = tfidf[new_doc_bow]  
+  
+# Get similarities of the new document against the entire corpus  
+similarities = similarity_index[new_doc_tfidf]  
+  
+# Print the similarities  
+for doc_position, doc_similarity in enumerate(similarities):  
+    print(f"Document {doc_position} : {doc_similarity}")  
+ 
+
+Step 7: Interpret the Results
+The similarities array will hold the similarity scores between the new document and all documents in the corpus. You can use these scores to find the most similar documents or decide on a threshold for matching interests.
+
+Keep in mind that the quality of the semantic matching depends on the quality of the preprocessing and the model used. While TF-IDF is a simple and often effective technique for finding documents with similar words, it doesn't capture deep semantic similarities as effectively as more advanced methods like LSI (Latent Semantic Indexing), LDA (Latent Dirichlet Allocation), or word embeddings models might.
+
+You may need to tweak the preprocessing steps and the model used based on
