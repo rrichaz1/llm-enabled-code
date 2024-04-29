@@ -21,7 +21,7 @@ Mentor-mentee match score was created based on above and circles were assigned b
 
 ### About the code
 
-1. The matching logic and goal similarity code was written using simple prompts to open AI GPT35 turbo model
+1. The matching logic and goal similarity code was written using simple [prompts](llm-instructions.md) to open AI GPT35 turbo model
 2. Github Copilot aided in code syntax
 
 ### Areas for improvement
